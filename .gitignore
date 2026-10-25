@@ -1,0 +1,17 @@
+# Build output (contains absolute local paths)
+bin/
+obj/
+publish/
+artifacts/
+*.user
+*.suo
+.vs/
+.vscode/
+.idea/
+
+# Test output
+TestResults/
+
+# Launcher data if run from a source folder
+data/
+UEVR builds/

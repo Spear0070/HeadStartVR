@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/HeadStartVR/HeadStartVR.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HeadStartVR.Tests/HeadStartVR.Tests.csproj" />
+  </Folder>
+</Solution>

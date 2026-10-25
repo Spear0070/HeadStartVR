@@ -1,0 +1,115 @@
+<Window x:Class="HeadStartVR.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Settings" Width="640" Height="680"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
+        Background="{StaticResource PanelBrush}" FontFamily="{StaticResource UiFont}" Foreground="{StaticResource TextBrush}" TextOptions.TextFormattingMode="Display" UseLayoutRounding="True">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="56" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+
+    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="56" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid Margin="28,0,0,0">
+                <TextBlock Text="Settings" FontFamily="{StaticResource DisplayFont}" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <Button Style="{StaticResource CloseButton}" Content="&#xE8BB;" HorizontalAlignment="Right" VerticalAlignment="Top"
+                        WindowChrome.IsHitTestVisibleInChrome="True" Click="Cancel_Click" />
+            </Grid>
+
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel x:Name="Fields" Margin="28,6,28,20">
+                    <TextBlock Text="OFXR BRIDGE TRAY APP (optional, found automatically)" Style="{StaticResource Label}" />
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBox x:Name="OfxrBox" />
+                        <Button Grid.Column="1" Content="Browse…" Margin="8,0,0,0" Tag="OfxrBox" Click="BrowseFile_Click" />
+                    </Grid>
+
+                    <TextBlock Text="VIRTUAL DESKTOP STREAMER (optional, found automatically)" Style="{StaticResource Label}" Margin="0,18,0,6" />
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBox x:Name="VdBox" />
+                        <Button Grid.Column="1" Content="Browse…" Margin="8,0,0,0" Tag="VdBox" Click="BrowseFile_Click" />
+                    </Grid>
+
+                    <TextBlock Text="WHERE YOUR UEVR BUILDS ARE (one folder per line)" Style="{StaticResource Label}" Margin="0,18,0,6" />
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBox x:Name="BuildsBox" AcceptsReturn="True" Height="70" VerticalContentAlignment="Top" TextWrapping="NoWrap" TextChanged="BuildsBox_TextChanged" />
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <Button Content="Add…" Tag="BuildsBox" Click="AddFolderLine_Click" />
+                            <Button Content="Get builds…" Margin="0,8,0,0" Click="GetBuilds_Click" ToolTip="Download an official UEVR build or a popular fork" />
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock x:Name="BuildsFound" Style="{StaticResource Muted}" Margin="0,6,0,0" TextWrapping="Wrap" />
+                    <TextBlock Style="{StaticResource Muted}" Margin="0,4,0,0" TextWrapping="Wrap"
+                               Text="Pick the folder that holds your builds, or any one build's folder (builds next to it are found too). Downloads, Desktop, Documents, C:\UEVR and C:\VRTools are always checked." />
+
+                    <TextBlock Text="INSTALL DOWNLOADED BUILDS INTO" Style="{StaticResource Label}" Margin="0,18,0,6" />
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBox x:Name="InstallBox" />
+                        <Button Grid.Column="1" Content="Browse…" Margin="8,0,0,0" Tag="InstallBox" Click="BrowseFolder_Click" />
+                    </Grid>
+                    <TextBlock Style="{StaticResource Muted}" Margin="0,6,0,0" TextWrapping="Wrap" Text="Leave empty to put them next to your existing builds." />
+
+                    <TextBlock Text="UEVR PROFILES FOLDER" Style="{StaticResource Label}" Margin="0,18,0,6" />
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBox x:Name="ProfilesBox" />
+                        <Button Grid.Column="1" Content="Browse…" Margin="8,0,0,0" Tag="ProfilesBox" Click="BrowseFolder_Click" />
+                    </Grid>
+
+                    <TextBlock Text="PROFILE BACKUPS FOLDER" Style="{StaticResource Label}" Margin="0,18,0,6" />
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBox x:Name="BackupsBox" />
+                        <Button Grid.Column="1" Content="Browse…" Margin="8,0,0,0" Tag="BackupsBox" Click="BrowseFolder_Click" />
+                    </Grid>
+
+                    <TextBlock Text="WATCH THESE FOLDERS FOR NEW PROFILE ZIPS (one per line)" Style="{StaticResource Label}" Margin="0,18,0,6" />
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBox x:Name="WatchBox" AcceptsReturn="True" Height="70" VerticalContentAlignment="Top" TextWrapping="NoWrap" />
+                        <Button Grid.Column="1" Content="Add…" Margin="8,0,0,0" VerticalAlignment="Top" Tag="WatchBox" Click="AddFolderLine_Click" />
+                    </Grid>
+                    <TextBlock Style="{StaticResource Muted}" Margin="0,6,0,0" TextWrapping="Wrap"
+                               Text="A zip named after a game's exe (e.g. SHProto-Win64-Shipping.zip) or containing a folder with that name is offered as that game's new profile." />
+
+                    <TextBlock Text="EXTRA FOLDERS TO SCAN FOR GAMES (one per line)" Style="{StaticResource Label}" Margin="0,18,0,6" />
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBox x:Name="ScanBox" AcceptsReturn="True" Height="70" VerticalContentAlignment="Top" TextWrapping="NoWrap" />
+                        <Button Grid.Column="1" Content="Add…" Margin="8,0,0,0" VerticalAlignment="Top" Tag="ScanBox" Click="AddFolderLine_Click" />
+                    </Grid>
+                    <TextBlock Style="{StaticResource Muted}" Margin="0,6,0,0" TextWrapping="Wrap"
+                               Text="Steam, Epic and GOG libraries are found automatically. Add folders where you keep other games (e.g. C:\Games)." />
+
+                    <TextBlock Text="WHILE LAUNCHING" Style="{StaticResource Label}" Margin="0,24,0,10" />
+                    <CheckBox x:Name="VoiceCheck" Style="{StaticResource Toggle}" Content="Spoken prompts (you hear them in the headset)" />
+                    <CheckBox x:Name="ComboCheck" Style="{StaticResource Toggle}" Margin="0,12,0,0" Content="Hold Back + Start on a controller to inject now" />
+                    <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
+                        <TextBlock Text="Check for the headset every" VerticalAlignment="Center" />
+                        <TextBox x:Name="PollBox" Width="60" Margin="10,0" />
+                        <TextBlock Text="seconds" VerticalAlignment="Center" />
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+
+            <Border Grid.Row="2" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" Padding="28,14">
+                <Grid>
+                    <TextBlock x:Name="ErrorText" Foreground="{StaticResource DangerBrush}" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,200,0" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Style="{StaticResource GhostButton}" Content="Cancel" Click="Cancel_Click" />
+                        <Button Style="{StaticResource PrimaryButton}" Content="Save" Margin="10,0,0,0" Padding="24,9" Click="Save_Click" IsDefault="True" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

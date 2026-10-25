@@ -1,0 +1,160 @@
+<Window x:Class="HeadStartVR.Views.GameEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Game" Width="680" Height="760" MinHeight="500"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False" ResizeMode="CanResize"
+        Background="{StaticResource PanelBrush}" FontFamily="{StaticResource UiFont}" Foreground="{StaticResource TextBrush}" TextOptions.TextFormattingMode="Display" UseLayoutRounding="True">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="56" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+
+    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="56" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid Margin="28,0,0,0">
+                <TextBlock x:Name="HeaderText" Text="Add game" FontFamily="{StaticResource DisplayFont}" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <Button Style="{StaticResource CloseButton}" Content="&#xE8BB;" HorizontalAlignment="Right" VerticalAlignment="Top"
+                        WindowChrome.IsHitTestVisibleInChrome="True" Click="Cancel_Click" />
+            </Grid>
+
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="28,6,28,20">
+
+                    <!-- Exe -->
+                    <TextBlock Text="GAME EXECUTABLE (…-Win64-Shipping.exe)" Style="{StaticResource Label}" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="ExeBox" LostFocus="ExeBox_LostFocus" />
+                        <Button Grid.Column="1" Content="Browse…" Margin="8,0,0,0" Click="BrowseExe_Click" />
+                    </Grid>
+                    <TextBlock x:Name="ExeHint" Style="{StaticResource Muted}" Margin="0,6,0,0" TextWrapping="Wrap"
+                               Text="Usually in &lt;Game&gt;\&lt;Project&gt;\Binaries\Win64\. UEVR injects into this process." />
+
+                    <!-- Name -->
+                    <TextBlock Text="NAME" Style="{StaticResource Label}" Margin="0,20,0,6" />
+                    <TextBox x:Name="NameBox" />
+
+                    <!-- Build -->
+                    <TextBlock Text="UEVR BUILD" Style="{StaticResource Label}" Margin="0,20,0,6" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ComboBox x:Name="BuildCombo" SelectionChanged="BuildCombo_SelectionChanged">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Display}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <Button Content="Other folder…" Margin="8,0,0,0" Click="BrowseBuild_Click" ToolTip="Use a UEVR build from any folder" />
+                            <Button Content="Get builds…" Margin="8,0,0,0" Click="GetBuilds_Click" ToolTip="Download an official UEVR build or a popular fork" />
+                        </StackPanel>
+                    </Grid>
+                    <DockPanel Margin="0,7,0,0">
+                        <Ellipse x:Name="RuntimeDot" Width="7" Height="7" Margin="0,5,8,0" VerticalAlignment="Top" />
+                        <TextBlock x:Name="RuntimeText" Style="{StaticResource Muted}" TextWrapping="Wrap" />
+                    </DockPanel>
+
+                    <!-- Profile -->
+                    <TextBlock Text="UEVR PROFILE ZIP (optional)" Style="{StaticResource Label}" Margin="0,20,0,6" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="ZipBox" />
+                        <Button Grid.Column="1" Content="Browse…" Margin="8,0,0,0" Click="BrowseZip_Click" />
+                        <Button Grid.Column="2" Style="{StaticResource GhostButton}" Margin="8,0,0,0" Click="ClearZip_Click" ToolTip="No profile zip">
+                            <TextBlock Text="&#xE711;" Style="{StaticResource Icon}" FontSize="11" />
+                        </Button>
+                    </Grid>
+                    <TextBlock Style="{StaticResource Muted}" Margin="0,6,0,0" TextWrapping="Wrap"
+                               Text="When you download an updated profile, overwrite this zip (or use Update profile… later). The launcher notices the change, backs up the old profile and installs the new one." />
+
+                    <!-- Launch method -->
+                    <TextBlock Text="START THE GAME" Style="{StaticResource Label}" Margin="0,22,0,6" />
+                    <Border CornerRadius="9" Background="{StaticResource InputBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="3" HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton x:Name="DirectRadio" Style="{StaticResource Segment}" Content="Directly from the exe" GroupName="launch" IsChecked="True" Checked="LaunchMethod_Checked" />
+                            <RadioButton x:Name="SteamRadio" Style="{StaticResource Segment}" Content="Through Steam" GroupName="launch" Checked="LaunchMethod_Checked" />
+                            <RadioButton x:Name="UriRadio" Style="{StaticResource Segment}" Content="Launcher link" GroupName="launch" Checked="LaunchMethod_Checked" />
+                        </StackPanel>
+                    </Border>
+                    <StackPanel x:Name="UriRow" Margin="0,10,0,0" Visibility="Collapsed">
+                        <TextBox x:Name="UriBox" />
+                        <TextBlock Style="{StaticResource Muted}" Margin="0,6,0,0" TextWrapping="Wrap"
+                                   Text="A link that starts the game through its launcher, e.g. com.epicgames.launcher://apps/…?action=launch (Scan fills this in for Epic games)." />
+                    </StackPanel>
+                    <Grid x:Name="SteamRow" Margin="0,10,0,0" Visibility="Collapsed">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="160" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Steam app id" Style="{StaticResource Muted}" VerticalAlignment="Center" Margin="0,0,10,0" />
+                        <TextBox x:Name="SteamIdBox" Grid.Column="1" />
+                        <TextBlock Grid.Column="2" Style="{StaticResource Muted}" VerticalAlignment="Center" Margin="10,0,0,0" TextWrapping="Wrap"
+                                   Text="Use this if the game won't start from its exe." />
+                    </Grid>
+
+                    <TextBlock Text="LAUNCH ARGUMENTS (optional)" Style="{StaticResource Label}" Margin="0,20,0,6" />
+                    <TextBox x:Name="ArgsBox" />
+                    <TextBlock Style="{StaticResource Muted}" Margin="0,6,0,0" Text="For example -dx12 or -nohmd (for games with their own VR plugin)." />
+
+                    <!-- Delay + OFXR -->
+                    <Grid Margin="0,22,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="24" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="INJECT DELAY (SECONDS)" Style="{StaticResource Label}" />
+                            <TextBox x:Name="DelayBox" Width="120" HorizontalAlignment="Left" />
+                            <TextBlock Style="{StaticResource Muted}" Margin="0,6,0,0" TextWrapping="Wrap"
+                                       Text="Time after the game window appears, so it reaches its main menu before UEVR injects." />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="FRAME GENERATION" Style="{StaticResource Label}" />
+                            <CheckBox x:Name="OfxrCheck" Style="{StaticResource Toggle}" Content="Use OFXR for this game" Margin="0,8,0,0" IsChecked="True" />
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Cover -->
+                    <TextBlock Text="COVER IMAGE (optional)" Style="{StaticResource Label}" Margin="0,22,0,6" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="CoverBox" />
+                        <Button Grid.Column="1" Content="Browse…" Margin="8,0,0,0" Click="BrowseCover_Click" />
+                    </Grid>
+                    <TextBlock Style="{StaticResource Muted}" Margin="0,6,0,0" Text="Steam games use their library art automatically." />
+                </StackPanel>
+            </ScrollViewer>
+
+            <Border Grid.Row="2" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" Padding="28,14">
+                <Grid>
+                    <TextBlock x:Name="ErrorText" Foreground="{StaticResource DangerBrush}" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,220,0" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Style="{StaticResource GhostButton}" Content="Cancel" Click="Cancel_Click" />
+                        <Button x:Name="SaveButton" Style="{StaticResource PrimaryButton}" Content="Add game" Margin="10,0,0,0" Padding="24,9" Click="Save_Click" IsDefault="True" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>
