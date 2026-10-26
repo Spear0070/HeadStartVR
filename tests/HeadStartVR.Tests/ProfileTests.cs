@@ -105,6 +105,18 @@ public class ProfileTests : IDisposable
         Assert.Equal(zip, _pm.FindPendingUpdate(_game)?.ZipPath);
     }
 
+    [Theory]
+    [InlineData("SHProto-Win64-Shipping.zip", true)]
+    [InlineData("SHProto-Win64-Shipping (1).zip", true)]
+    [InlineData("SHProto Win64 Shipping 421 3.3 2026-09-23T15-50Z alf5wbRh4.zip", true)] // real Flat2VR file name
+    [InlineData("shproto_win64_shipping_v2.zip", true)]
+    [InlineData("SHProto.zip", false)]
+    [InlineData("Other-Win64-Shipping.zip", false)]
+    public void Download_names_with_spaces_or_underscores_still_match(string fileName, bool expected)
+    {
+        Assert.Equal(expected, ProfileManager.NameMatches(fileName, "SHProto-Win64-Shipping"));
+    }
+
     [Fact]
     public void Unrelated_downloads_are_ignored()
     {

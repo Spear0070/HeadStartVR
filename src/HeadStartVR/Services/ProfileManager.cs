@@ -76,7 +76,7 @@ public sealed class ProfileManager
                 foreach (var f in new DirectoryInfo(folder).EnumerateFiles("*.zip"))
                 {
                     if (f.LastWriteTime < cutoff || f.Length > 300_000_000) continue;
-                    if (f.Name.StartsWith(stem, StringComparison.OrdinalIgnoreCase) || ZipHasTopFolder(f.FullName, stem))
+                    if (NameMatches(f.Name, stem) || ZipHasTopFolder(f.FullName, stem))
                         candidates.Add(f);
                 }
             }
@@ -86,6 +86,17 @@ public sealed class ProfileManager
             }
         }
         foreach (var f in candidates.OrderByDescending(f => f.LastWriteTime)) yield return f;
+    }
+
+    /// <summary>
+    /// "SHProto-Win64-Shipping (1).zip" and "SHProto Win64 Shipping 421 3.3.zip" both belong to SHProto-Win64-Shipping:
+    /// shared profiles often swap dashes for spaces or underscores, so compare letters and digits only.
+    /// </summary>
+    public static bool NameMatches(string fileName, string exeStem)
+    {
+        static string Squash(string s) => new(s.Where(char.IsLetterOrDigit).Select(char.ToLowerInvariant).ToArray());
+        var stem = Squash(exeStem);
+        return stem.Length > 0 && Squash(Path.GetFileNameWithoutExtension(fileName)).StartsWith(stem, StringComparison.Ordinal);
     }
 
     private static readonly Dictionary<string, (long len, DateTime mtime, string hash)> HashCache = new(StringComparer.OrdinalIgnoreCase);
